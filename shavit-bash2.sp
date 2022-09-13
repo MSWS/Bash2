@@ -441,13 +441,13 @@ public void PrintToDiscord(int client, const char[] log, any ...)
 		GetClientName(client, clientName, 32);
 		
 		DiscordWebHook hook = new DiscordWebHook(g_sWebhook);
-		hook.SlackMode = true;
+		hook.SlackMode = false;
 		
 		hook.SetUsername("BASH 2.0");
 		
 		MessageEmbed Embed = new MessageEmbed();
 		
-		Embed.SetColor("#ff2222");
+		Embed.SetColor("11674146");
 		Embed.SetTitle(g_sHostName);
 		
 		char steamid[65];
@@ -455,8 +455,28 @@ public void PrintToDiscord(int client, const char[] log, any ...)
 		GetClientAuthId(client, AuthId_SteamID64, steamid, sizeof(steamid));
 		Format(playerName, sizeof(playerName), "[%N](http://www.steamcommunity.com/profiles/%s)", client, steamid);
 		
-		Embed.AddField("Player", playerName, true);
-		Embed.AddField("Event", log, true);
+		char desc[1028];
+		Format(desc, sizeof(desc), "**%s** %s", playerName, log);
+		PrintToConsoleAll(desc);
+		Embed.SetDescription(desc);
+
+		char mapName[PLATFORM_MAX_PATH];
+		GetCurrentMap(mapName, sizeof(mapName));
+		Embed.AddField("Map", mapName, true);
+		
+		float pos[3];
+		GetClientAbsOrigin(client, pos);
+		
+		char posStr[64];
+		Format(posStr, sizeof(posStr), "%.0f %.0f %.0f", pos[0], pos[1], pos[2]);
+		Embed.AddField("Position", posStr, true);
+
+		#if defined TIMER
+			int style = Shavit_GetBhopStyle(client);
+			char name[32];
+			Shavit_GetStyleStrings(style, sStyleName, name, sizeof(name));
+			Embed.AddField("Style", name, true);
+		#endif
 		
 		hook.Embed(Embed);
 		
