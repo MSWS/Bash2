@@ -457,7 +457,6 @@ public void PrintToDiscord(int client, const char[] log, any ...)
 		
 		char desc[1028];
 		Format(desc, sizeof(desc), "**%s** %s", playerName, log);
-		PrintToConsoleAll(desc);
 		Embed.SetDescription(desc);
 
 		char mapName[PLATFORM_MAX_PATH];
